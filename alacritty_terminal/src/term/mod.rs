@@ -2302,6 +2302,16 @@ impl<T: EventListener> Handler for Term<T> {
     }
 
     #[inline]
+    fn osc_unhandled(&mut self, params: &[&[u8]], terminator: &str) {
+        let owned: Vec<Vec<u8>> = params.iter().map(|p| p.to_vec()).collect();
+        let bell = terminator == "\x07";
+        self.event_proxy.send_event(Event::OscDispatch {
+            params: owned,
+            bell_terminated: bell,
+        });
+    }
+
+    #[inline]
     fn push_title(&mut self) {
         trace!("Pushing '{:?}' onto title stack", self.title);
 
