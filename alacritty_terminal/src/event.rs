@@ -81,7 +81,10 @@ impl Debug for Event {
             Event::Exit => write!(f, "Exit"),
             Event::ChildExit(status) => write!(f, "ChildExit({status:?})"),
             Event::OscDispatch { params, bell_terminated } => {
-                write!(f, "OscDispatch({} params, bell={bell_terminated})", params.len())
+                let command = params.first()
+                    .and_then(|p| std::str::from_utf8(p).ok())
+                    .unwrap_or("?");
+                write!(f, "OscDispatch(cmd={command}, {} params, bell={bell_terminated})", params.len())
             },
         }
     }
