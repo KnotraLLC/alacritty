@@ -56,6 +56,12 @@ pub enum Event {
 
     /// Child process exited.
     ChildExit(ExitStatus),
+
+    /// Unhandled OSC sequence forwarded for custom processing.
+    ///
+    /// Contains the raw parameters split on `;` and whether the sequence was
+    /// terminated by BEL (`\x07`) or ST (`ESC \`).
+    OscDispatch { params: Vec<Vec<u8>>, bell_terminated: bool },
 }
 
 impl Debug for Event {
@@ -74,6 +80,9 @@ impl Debug for Event {
             Event::Bell => write!(f, "Bell"),
             Event::Exit => write!(f, "Exit"),
             Event::ChildExit(status) => write!(f, "ChildExit({status:?})"),
+            Event::OscDispatch { params, bell_terminated } => {
+                write!(f, "OscDispatch({} params, bell={bell_terminated})", params.len())
+            },
         }
     }
 }
